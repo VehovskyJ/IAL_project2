@@ -32,6 +32,15 @@ int get_hash(char *key) {
  * Inicializace tabulky — zavolá sa před prvním použitím tabulky.
  */
 void ht_init(ht_table_t *table) {
+    // Checks if pointer to table is valid
+    if (table == NULL) {
+        return;
+    }
+
+    // Iterates through the items and sets them to NULL
+    for (int i = 0; i < HT_SIZE; ++i) {
+        (*table)[i] = NULL;
+    }
 }
 
 /*
