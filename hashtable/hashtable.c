@@ -82,6 +82,26 @@ ht_item_t *ht_search(ht_table_t *table, char *key) {
  * synonym zvolte nejefektivnější možnost a vložte prvek na začátek seznamu.
  */
 void ht_insert(ht_table_t *table, char *key, float value) {
+    // Checks if pointers to table and key are valid
+    if (table == NULL || key == NULL) {
+        return;
+    }
+
+    // Checks if the key exists, if so, updates its value
+    ht_item_t *res = ht_search(table, key);
+    if (res != NULL) {
+        res->value = value;
+        return;
+    }
+
+    // Creates new item and sets its properties
+    ht_item_t *item = malloc(sizeof(ht_item_t));
+    item->key = key;
+    item->value = value;
+    item->next = (*table)[get_hash(key)];
+
+    // Inserts the new item into the hash table
+    (*table)[get_hash(key)] = item;
 }
 
 /*
