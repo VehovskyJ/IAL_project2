@@ -50,7 +50,27 @@ void ht_init(ht_table_t *table) {
  * hodnotu NULL.
  */
 ht_item_t *ht_search(ht_table_t *table, char *key) {
-  return NULL;
+    // Checks if pointers to table and key are valid
+    if (table == NULL || key == NULL) {
+        return NULL;
+    }
+
+    // Find initial address of an item with the key
+    ht_item_t *item = (*table)[get_hash(key)];
+
+
+    while (item != NULL) {
+        // If the key is found, returns the item
+        if (strcmp(item->key, key) == 0) {
+            return item;
+        }
+
+        // Moves to the next item
+        item = item->next;
+    }
+
+    // Key not found, return NULL
+    return NULL;
 }
 
 /*
