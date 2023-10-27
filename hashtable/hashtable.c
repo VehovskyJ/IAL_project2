@@ -113,7 +113,19 @@ void ht_insert(ht_table_t *table, char *key, float value) {
  * Při implementaci využijte funkci ht_search.
  */
 float *ht_get(ht_table_t *table, char *key) {
-  return NULL;
+    // Checks if the pointers to table and key are valid
+    if (table == NULL || key == NULL) {
+        return NULL;
+    }
+
+    // Searches for the key, if found, returns pointer to the value
+    ht_item_t *item = ht_search(table, key);
+    if (item != NULL) {
+        return &(item->value);
+    }
+
+    // Returns NULL if key not found
+    return NULL;
 }
 
 /*
@@ -125,6 +137,30 @@ float *ht_get(ht_table_t *table, char *key) {
  * Při implementaci NEPOUŽÍVEJTE funkci ht_search.
  */
 void ht_delete(ht_table_t *table, char *key) {
+    // Checks if pointers to table and key are valid
+    if (table == NULL || key == NULL) {
+        return;
+    }
+
+    // Find initial address of an item with the key
+    ht_item_t *item = (*table)[get_hash(key)];
+    ht_item_t *prevItem;
+
+    while (item != NULL) {
+        // If the key is found, break the loop
+        if (strcmp(item->key, key) == 0) {
+            break;
+        }
+
+        // Sets previous item to the current item and increments the item position
+        prevItem = item;
+        item = item->next;
+    }
+
+    // Sets the next item of the previous item to point to the item after the deleted one
+    prevItem->next = item->next;
+    // Deallocates memory from teh ite,
+    free(item);
 }
 
 /*
@@ -134,6 +170,25 @@ void ht_delete(ht_table_t *table, char *key) {
  * inicializaci.
  */
 void ht_delete_all(ht_table_t *table) {
+    // Checks if pointer to table is valid
+    if (table == NULL) {
+        return;
+    }
+
+    // Iterate over all the hash table
+    for (int i = 0; i < HT_SIZE; ++i) {
+        ht_item_t *item = (*table)[i];
+        while (item != NULL) {
+            ht_item_t *delItem = item;
+            item = item->next;
+
+            // Deallocates memory form the item
+            free(delItem);
+        }
+
+        // Sets the value to NULL
+        (*table)[i] = NULL;
+    }
 }
 /*
        _
