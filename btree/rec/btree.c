@@ -18,6 +18,8 @@
  * možné toto detekovat ve funkci. 
  */
 void bst_init(bst_node_t **tree) {
+    // Initializes tree to NULL
+    *tree = NULL;
 }
 
 /*
@@ -30,7 +32,22 @@ void bst_init(bst_node_t **tree) {
  * Funkci implementujte rekurzivně bez použité vlastních pomocných funkcí.
  */
 bool bst_search(bst_node_t *tree, char key, int *value) {
-  return false;
+    // Checks if pointer to tree is valid
+    if (tree == NULL) {
+        return false;
+    }
+
+    // If the current key matches the desired key, return true and value
+    if (tree->key == key) {
+        *value = tree->value;
+        return true;
+    }
+
+    // If current key is smaller than the key continue searching in the right branch otherwise continue on the left
+    if (tree->key < key) {
+        return bst_search(tree->right, key, value);
+    }
+    return bst_search(tree->left, key, value);
 }
 
 /*
@@ -45,6 +62,27 @@ bool bst_search(bst_node_t *tree, char key, int *value) {
  * Funkci implementujte rekurzivně bez použití vlastních pomocných funkcí.
  */
 void bst_insert(bst_node_t **tree, char key, int value) {
+    // If the current tree is NULL, insert node
+    if (*tree == NULL) {
+        // Allocate memory for new node
+        *tree = malloc(sizeof(bst_node_t));
+        if (*tree == NULL) {
+            return;
+        }
+
+        // Set node properties
+        (*tree)->key = key;
+        (*tree)->value = value;
+        (*tree)->right = NULL;
+        (*tree)->left = NULL;
+
+        return;
+    }
+
+    if ((*tree)->key > key) {
+        bst_insert(&(*tree)->left, key, value);
+    }
+    bst_insert(&(*tree)->right, key, value);
 }
 
 /*
@@ -61,6 +99,20 @@ void bst_insert(bst_node_t **tree, char key, int value) {
  * Funkci implementujte rekurzivně bez použití vlastních pomocných funkcí.
  */
 void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree) {
+    if ((*tree)->right == NULL) {
+        // Sets key and value of the rightmost to the target
+        target->key = (*tree)->key;
+        target->value = (*tree)->value;
+
+        // Free the right node, but preserve the left one
+        bst_node_t *right = *tree;
+        *tree = (*tree)->left;
+        free(right);
+        return;
+    }
+
+    // Find the rightmost
+    bst_replace_by_rightmost(target, &(*tree)->right);
 }
 
 /*
