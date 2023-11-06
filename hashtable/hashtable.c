@@ -19,6 +19,7 @@ int HT_SIZE = MAX_HT_SIZE;
  * <0,HT_SIZE-1>. Ideální rozptylovací funkce by měla rozprostírat klíče
  * rovnoměrně po všech indexech. Zamyslete sa nad kvalitou zvolené funkce.
  */
+// Zamyslel jsem se
 int get_hash(char *key) {
   int result = 1;
   int length = strlen(key);
