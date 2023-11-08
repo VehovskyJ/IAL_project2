@@ -114,9 +114,9 @@ void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree) {
         target->value = (*tree)->value;
 
         // Free the right node, but preserve the left one
-        bst_node_t *right = *tree;
+        bst_node_t *toFree = *tree;
         *tree = (*tree)->left;
-        free(right);
+        free(toFree);
         return;
     }
 
@@ -148,8 +148,8 @@ void bst_delete(bst_node_t **tree, char key) {
         if ((*tree)->left == NULL && (*tree)->right == NULL) {
             // Tree has no subtrees
             // Free the element
-            bst_node_t *toFree = *tree;
-            free(toFree);
+            free(*tree);
+            *tree = NULL;
         } else if ((*tree)->left == NULL) {
             // Tree has only right subtree
             // Replaces the current element with the right one
