@@ -20,6 +20,8 @@
  * možné toto detekovat ve funkci. 
  */
 void bst_init(bst_node_t **tree) {
+    // Initializes tree to NULL
+    *tree = NULL;
 }
 
 /*
@@ -32,7 +34,27 @@ void bst_init(bst_node_t **tree) {
  * Funkci implementujte iterativně bez použité vlastních pomocných funkcí.
  */
 bool bst_search(bst_node_t *tree, char key, int *value) {
-  return false;
+    // Save current node
+    bst_node_t node = tree;
+
+    while (node != NULL) {
+        // If the key is found, return its value and true
+        if (key == node.key) {
+            *value = node.value;
+            return true;
+        }
+
+        // If the key is smaller than the current key continue in left subtree
+        // Otherwise continue in the right subtree
+        if (key < node.key) {
+            node = node.left;
+        } else {
+            node = node.right;
+        }
+    }
+
+    // Return false if key was not found
+    return false;
 }
 
 /*
