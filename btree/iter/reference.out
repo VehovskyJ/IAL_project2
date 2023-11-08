@@ -657,7 +657,7 @@ Binary tree structure:
         +-[A,3]
 
 Traversed items:
-[B,2][A,3][C,4][D,1][E,5]
+[A,3][B,2][C,4][D,1][E,5]
 
 [test_tree_postorder] Traverse the tree using postorder
 Binary tree structure:
@@ -673,5 +673,5 @@ Binary tree structure:
         +-[A,3]
 
 Traversed items:
-[B,2][A,3][C,4][E,5][D,1]
+[A,3][C,4][B,2][E,5][D,1]
 
