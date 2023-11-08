@@ -80,6 +80,12 @@ void bst_insert(bst_node_t **tree, char key, int value) {
         return;
     }
 
+    // If key already exists, update its value
+    if (key == (*tree)->key) {
+        (*tree)->value = value;
+        return;
+    }
+
     // If the key is smaller than the current key continue in left subtree
     // Otherwise continue in the right subtree
     if (key < (*tree)->key) {
