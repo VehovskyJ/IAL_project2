@@ -90,8 +90,9 @@ void bst_insert(bst_node_t **tree, char key, int value) {
     // Otherwise continue in the right subtree
     if (key < (*tree)->key) {
         bst_insert(&(*tree)->left, key, value);
+    } else {
+        bst_insert(&(*tree)->right, key, value);
     }
-    bst_insert(&(*tree)->right, key, value);
 }
 
 /*
@@ -174,8 +175,9 @@ void bst_delete(bst_node_t **tree, char key) {
     // Otherwise continue in the right subtree
     if (key < (*tree)->key) {
         bst_delete(&(*tree)->left, key);
+    } else {
+        bst_delete(&(*tree)->right, key);
     }
-    bst_delete(&(*tree)->right, key);
 }
 
 /*
