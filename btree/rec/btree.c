@@ -38,16 +38,17 @@ bool bst_search(bst_node_t *tree, char key, int *value) {
     }
 
     // If the current key matches the desired key, return true and value
-    if (tree->key == key) {
+    if (key == tree->key) {
         *value = tree->value;
         return true;
     }
 
-    // If current key is smaller than the key continue searching in the right branch otherwise continue on the left
-    if (tree->key < key) {
-        return bst_search(tree->right, key, value);
+    // If the key is smaller than the current key continue in left subtree
+    // Otherwise continue in the right subtree
+    if (key < tree->key) {
+        return bst_search(tree->left, key, value);
     }
-    return bst_search(tree->left, key, value);
+    return bst_search(tree->right, key, value);
 }
 
 /*
@@ -79,7 +80,9 @@ void bst_insert(bst_node_t **tree, char key, int value) {
         return;
     }
 
-    if ((*tree)->key > key) {
+    // If the key is smaller than the current key continue in left subtree
+    // Otherwise continue in the right subtree
+    if (key < (*tree)->key) {
         bst_insert(&(*tree)->left, key, value);
     }
     bst_insert(&(*tree)->right, key, value);
