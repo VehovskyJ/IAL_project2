@@ -32,6 +32,37 @@
  * Pro implementaci si můžete v tomto souboru nadefinovat vlastní pomocné funkce.
 */
 void letter_count(bst_node_t **tree, char *input) {
+    // Initialize tree
+    bst_init(tree);
+
+    // Iterate over input string
+    while (*input != '\0') {
+        char c = *input;
+
+        // Convert uppercase to lowercase
+        if (c >= 'A' && c <= 'Z') {
+            c += 32;
+        }
+
+        // If the character is not a-z or space, convert it to '_'
+        if (!((c >= 'a' && c <= 'z') || c == ' ')) {
+            c = '_';
+        }
+
+        // Search for the character in the tree
+        bst_node_t *node = bst_search(*tree, key);
+
+        // If the character is already in the tree, increment its value
+        // Otherwise insert it into the tree
+        if (node != NULL) {
+            node->value++;
+        } else {
+            *tree = bst_insert(*tree, key, 1);
+        }
+
+        // Move to the next character
+        input++;
+    }
 }
 
 
