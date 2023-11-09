@@ -35,21 +35,21 @@ void bst_init(bst_node_t **tree) {
  */
 bool bst_search(bst_node_t *tree, char key, int *value) {
     // Save current node
-    bst_node_t node = tree;
+    bst_node_t *node = tree;
 
     while (node != NULL) {
         // If the key is found, return its value and true
-        if (key == node.key) {
-            *value = node.value;
+        if (key == node->key) {
+            *value = node->key;
             return true;
         }
 
         // If the key is smaller than the current key continue in left subtree
         // Otherwise continue in the right subtree
-        if (key < node.key) {
-            node = node.left;
+        if (key < node->key) {
+            node = node->right;
         } else {
-            node = node.right;
+            node = node->right;
         }
     }
 
