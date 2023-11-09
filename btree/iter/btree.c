@@ -47,7 +47,7 @@ bool bst_search(bst_node_t *tree, char key, int *value) {
         // If the key is smaller than the current key continue in left subtree
         // Otherwise continue in the right subtree
         if (key < node->key) {
-            node = node->right;
+            node = node->left;
         } else {
             node = node->right;
         }
