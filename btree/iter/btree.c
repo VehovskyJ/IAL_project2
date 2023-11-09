@@ -69,6 +69,44 @@ bool bst_search(bst_node_t *tree, char key, int *value) {
  * Funkci implementujte iterativně bez použití vlastních pomocných funkcí.
  */
 void bst_insert(bst_node_t **tree, char key, int value) {
+    // Create a new node
+    bst_node_t *newNode = malloc(sizeof(bst_node_t));
+    newNode->key = key;
+    newNode->value = value;
+    newNode->left = NULL;
+    newNode->right = NULL;
+
+    // If the tree is empty, insert the new node as root
+    if (*tree == NULL) {
+        *tree = newNode;
+        return;
+    }
+
+    bst_node_t *node = *tree;
+    while (node != NULL) {
+        // If the keys match, replace its value and free the new node
+        if (key == node->key) {
+            node->value = value;
+            free(newNode);
+            return;
+        }
+
+        // If the key is smaller than the current key continue in left subtree
+        // Otherwise continue in the right subtree
+        if (key < node->key) {
+            if (node->left == NULL) {
+                node->left = newNode;
+                return;
+            }
+            node = node->left;
+        } else {
+            if (node->right == NULL) {
+                node->right = newNode;
+                return;
+            }
+            node = node->right;
+        }
+    }
 }
 
 /*
@@ -85,6 +123,30 @@ void bst_insert(bst_node_t **tree, char key, int value) {
  * Funkci implementujte iterativně bez použití vlastních pomocných funkcí.
  */
 void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree) {
+    // Checks if the tree is empty
+    if (*tree == NULL) {
+        return;
+    }
+
+    bst_node_t *node = *tree;
+    bst_node_t *previous = NULL;
+    // Finds the rightmost
+    while (node->right != NULL) {
+        previous = node;
+        node = node->right;
+    }
+
+    // Sets key and value of the rightmost to the target
+    target->key = node->key;
+    target->value = node->value;
+
+    if (previous == NULL) {
+        *tree = node->left;
+    } else {
+        previous->right = node->left;
+    }
+
+    free(node);
 }
 
 /*
@@ -101,6 +163,66 @@ void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree) {
  * použití vlastních pomocných funkcí.
  */
 void bst_delete(bst_node_t **tree, char key) {
+    // Checks if pointer to tree is valid
+    if (*tree == NULL) {
+        return;
+    }
+
+    bst_node_t *node = *tree;
+    bst_node_t *previous = NULL;
+
+    while (node != NULL && node->key != key) {
+        previous = node;
+
+        // If the key is smaller than the current key continue in left subtree
+        // Otherwise continue in the right subtree
+        if (key < node->key) {
+            node = node->left;
+        } else {
+            node = node->right;
+        }
+    }
+
+    // If the key was not found, return
+    if (node == NULL) {
+        return;
+    }
+
+    if (node->left == NULL && node->right == NULL) {
+        // If the node is root, set the tree to NULL
+        if (previous == NULL) {
+            *tree = NULL;
+        } else if (previous->left == node) {
+            // If the node is left child, set the left child to NULL
+            previous->left = NULL;
+        } else if (previous->right == node) {
+            // If the node is right child, set the right child to NULL
+            previous->right = NULL;
+        }
+
+        free(node);
+    } else if (node->left != NULL && node->right != NULL) {
+        // Replace the node by the rightmost node of the left subtree
+        bst_replace_by_rightmost(node, &node->left);
+    } else {
+        // If the node has only one child, replace it by the child
+        bst_node_t *child;
+        if (node->left != NULL) {
+            child = node->left;
+        } else {
+            child = node->right;
+        }
+
+        if (previous == NULL) {
+            *tree = child;
+        } else if (previous->left == node) {
+            previous->left = child;
+        } else if (previous->right == node) {
+            previous->right = child;
+        }
+
+        free(node);
+    }
 }
 
 /*
@@ -114,6 +236,36 @@ void bst_delete(bst_node_t **tree, char key) {
  * vlastních pomocných funkcí.
  */
 void bst_dispose(bst_node_t **tree) {
+    // Checks if pointer to tree is valid
+    if (*tree == NULL) {
+        return;
+    }
+
+    // Initializes stack
+    stack_bst_t stack;
+    stack_bst_init(&stack);
+
+    // Pushes the root to stack
+    stack_bst_push(&stack, *tree);
+
+    while (!stack_bst_empty(&stack)) {
+        // Pops the node from the stack
+        bst_node_t *node = stack_bst_top(&stack);
+        stack_bst_pop(&stack);
+
+        // Pushes the children of the node to the stack
+        if (node->left != NULL) {
+            stack_bst_push(&stack, node->left);
+        }
+        if (node->right != NULL) {
+            stack_bst_push(&stack, node->right);
+        }
+
+        // Frees the current element
+        free(node);
+    }
+
+    *tree = NULL;
 }
 
 /*
