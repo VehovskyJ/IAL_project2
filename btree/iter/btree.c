@@ -35,8 +35,8 @@ void bst_init(bst_node_t **tree) {
  */
 bool bst_search(bst_node_t *tree, char key, bst_node_content_t **value) {
     // Check if the tree is empty
-    if (*tree == NULL) {
-        return;
+    if (tree == NULL) {
+        return false;
     }
 
     // Save current node
