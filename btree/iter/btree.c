@@ -86,6 +86,11 @@ void bst_insert(bst_node_t **tree, char key, bst_node_content_t value) {
     while (node != NULL) {
         // If the keys match, replace its value and free the new node
         if (key == node->key) {
+            if (node->content.value != NULL) {
+                free(node->content.value);
+                node->content.value = NULL;
+            }
+
             node->content = value;
             free(newNode);
             return;
@@ -127,6 +132,13 @@ void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree) {
     if (*tree == NULL) {
         return;
     }
+
+    // Free the content of the target node
+    if (target->content.value != NULL) {
+        free(target->content.value);
+        target->content.value = NULL;
+    }
+
 
     bst_node_t *node = *tree;
     bst_node_t *previous = NULL;
@@ -186,6 +198,11 @@ void bst_delete(bst_node_t **tree, char key) {
     // If the key was not found, return
     if (node == NULL) {
         return;
+    }
+
+    if (node->content.value != NULL) {
+        free(node->content.value);
+        node->content.value = NULL;
     }
 
     if (node->left == NULL && node->right == NULL) {
@@ -262,6 +279,10 @@ void bst_dispose(bst_node_t **tree) {
         }
 
         // Free the current element
+        if (node->content.value != NULL) {
+            free(node->content.value);
+            node->content.value = NULL;
+        }
         free(node);
     }
 
