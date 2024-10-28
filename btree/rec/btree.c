@@ -115,6 +115,12 @@ void bst_insert(bst_node_t **tree, char key, bst_node_content_t value) {
  * Funkci implementujte rekurzivně bez použití vlastních pomocných funkcí.
  */
 void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree) {
+    // Free the content of the target node
+    if (target->content.value != NULL) {
+        free(target->content.value);
+        target->content.value = NULL;
+    }
+
     if ((*tree)->right == NULL) {
         // Set key and value of the rightmost to the target
         target->key = (*tree)->key;
@@ -123,11 +129,6 @@ void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree) {
         // Free the right node, but preserve the left one
         bst_node_t *toFree = *tree;
         *tree = (*tree)->left;
-
-        if (toFree->content.value != NULL) {
-            free(toFree->content.value);
-            toFree->content.value = NULL;
-        }
         free(toFree);
         return;
     }
