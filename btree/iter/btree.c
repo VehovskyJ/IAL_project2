@@ -76,6 +76,9 @@ bool bst_search(bst_node_t *tree, char key, bst_node_content_t **value) {
 void bst_insert(bst_node_t **tree, char key, bst_node_content_t value) {
     // Create a new node
     bst_node_t *newNode = malloc(sizeof(bst_node_t));
+    if (newNode == NULL) {
+        return;
+    }
     newNode->key = key;
     newNode->content = value;
     newNode->left = NULL;
