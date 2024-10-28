@@ -8,17 +8,29 @@
 
 #include <stdbool.h>
 
+// výčet datových typů hodnoty
+typedef enum {
+  INTEGER = 0,
+  CHARACTER_T
+} bst_node_content_type_t;
+
+// Obal hodnota uzlu
+typedef struct bst_node_content {
+    void* value;                    // ukazatel na hodnotu
+    bst_node_content_type_t type;   // datový typ hodnoty
+} bst_node_content_t;
+
 // Uzel stromu
 typedef struct bst_node {
-  char key;               // klíč
-  int value;              // hodnota
-  struct bst_node *left;  // levý potomek
-  struct bst_node *right; // pravý potomek
+  int key;                     // klíč
+  bst_node_content_t content;  // hodnota
+  struct bst_node *left;       // levý potomek
+  struct bst_node *right;      // pravý potomek
 } bst_node_t;
 
 void bst_init(bst_node_t **tree);
-void bst_insert(bst_node_t **tree, char key, int value);
-bool bst_search(bst_node_t *tree, char key, int *value);
+void bst_insert(bst_node_t **tree, char key, bst_node_content_t value);
+bool bst_search(bst_node_t *tree, char key, bst_node_content_t **value);
 void bst_delete(bst_node_t **tree, char key);
 void bst_dispose(bst_node_t **tree);
 
@@ -37,6 +49,7 @@ void bst_postorder(bst_node_t *tree, bst_items_t *items);
 
 void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree);
 
+void bst_print_node_content(bst_node_content_t *content);
 void bst_print_node(bst_node_t *node);
 
 void bst_balance(bst_node_t **tree);

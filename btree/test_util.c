@@ -71,6 +71,13 @@ void bst_print_items(bst_items_t *items) {
   printf("\n");
 }
 
+void bst_print_search_result(bst_node_content_t* content)
+{
+  printf("Search result: ");
+  bst_print_node_content(content);
+  printf("\n");
+}
+
 void bst_reset_items (bst_items_t *items) {
   if(items != NULL) {
     if (items->capacity > 0)
@@ -82,9 +89,20 @@ void bst_reset_items (bst_items_t *items) {
   }
 }
 
+bst_node_content_t create_integer_content(int value)
+{
+  bst_node_content_t result = {
+    .type = INTEGER,
+    .value = malloc(sizeof(int))
+  };
+  *((int*)(result.value)) = value;
+  return result;
+}
+
 void bst_insert_many(bst_node_t **tree, const char keys[], const int values[],
                      int count) {
   for (int i = 0; i < count; i++) {
-    bst_insert(tree, keys[i], values[i]);
+
+    bst_insert(tree, keys[i], create_integer_content(values[i]));
   }
 }

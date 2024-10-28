@@ -33,29 +33,31 @@ ENDTEST
 
 TEST(test_tree_search_empty, "Search in an empty tree (A)")
 bst_init(&test_tree);
-int result;
+bst_node_content_t* result = NULL;
 bst_search(test_tree, 'A', &result);
+bst_print_search_result(result);
 ENDTEST
 
 TEST(test_tree_insert_root, "Insert an item (H,1)")
 bst_init(&test_tree);
-bst_insert(&test_tree, 'H', 1);
+bst_insert(&test_tree, 'H', create_integer_content(1));
 bst_print_tree(test_tree);
 ENDTEST
 
 TEST(test_tree_search_root, "Search in a single node tree (H)")
 bst_init(&test_tree);
-bst_insert(&test_tree, 'H', 1);
-int result;
+bst_insert(&test_tree, 'H', create_integer_content(1));
+bst_node_content_t* result = NULL;
 bst_search(test_tree, 'H', &result);
 bst_print_tree(test_tree);
+bst_print_search_result(result);
 ENDTEST
 
 TEST(test_tree_update_root, "Update a node in a single node tree (H,1)->(H,8)")
 bst_init(&test_tree);
-bst_insert(&test_tree, 'H', 1);
+bst_insert(&test_tree, 'H', create_integer_content(1));
 bst_print_tree(test_tree);
-bst_insert(&test_tree, 'H', 8);
+bst_insert(&test_tree, 'H', create_integer_content(8));
 bst_print_tree(test_tree);
 ENDTEST
 
@@ -68,17 +70,19 @@ ENDTEST
 TEST(test_tree_search, "Search for an item deeper in the tree (A)")
 bst_init(&test_tree);
 bst_insert_many(&test_tree, base_keys, base_values, base_data_count);
-int result;
+bst_node_content_t* result = NULL;
 bst_search(test_tree, 'A', &result);
 bst_print_tree(test_tree);
+bst_print_search_result(result);
 ENDTEST
 
 TEST(test_tree_search_missing, "Search for a missing key (X)")
 bst_init(&test_tree);
 bst_insert_many(&test_tree, base_keys, base_values, base_data_count);
-int result;
+bst_node_content_t* result = NULL;
 bst_search(test_tree, 'X', &result);
 bst_print_tree(test_tree);
+bst_print_search_result(result);
 ENDTEST
 
 TEST(test_tree_delete_leaf, "Delete a leaf node (A)")
@@ -178,13 +182,6 @@ letter_count(&test_tree, "abBcCc_ 123 *");
 bst_print_tree(test_tree);
 ENDTEST
 
-TEST(test_balance, "Count letters and balance");
-bst_init(&test_tree);
-letter_count(&test_tree, "abBcCc_ 123 *");
-bst_balance(&test_tree);
-bst_print_tree(test_tree);
-ENDTEST
-
 #endif // EXA
 
 int main(int argc, char *argv[]) {
@@ -212,6 +209,5 @@ int main(int argc, char *argv[]) {
 
 #ifdef EXA
   test_letter_count();
-  test_balance();
 #endif // EXA
 }

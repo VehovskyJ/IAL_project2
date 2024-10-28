@@ -21,6 +21,8 @@ typedef enum direction { left, right, none } direction_t;
 
 void bst_print_subtree(bst_node_t *tree, char *prefix, direction_t from);
 void bst_print_tree(bst_node_t *tree);
+void bst_print_search_result(bst_node_content_t* content);
+bst_node_content_t create_integer_content(int value);
 void bst_insert_many(bst_node_t **tree, const char keys[], const int values[],
                      int count);
 bst_items_t* bst_init_items();

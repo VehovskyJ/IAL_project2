@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-Wall -std=c11 -pedantic -lm
-FILES_REC=exa.c ../rec/btree.c ../btree.c ../test_util.c ../test.c
-FILES_ITER=exa.c ../iter/btree.c ../iter/stack.c ../btree.c ../test_util.c ../test.c
+FILES_REC=exa.c ../rec/btree.c ../btree.c ../test_util.c ../test.c ../character.c
+FILES_ITER=exa.c ../iter/btree.c ../iter/stack.c ../btree.c ../test_util.c ../test.c ../character.c
 
 .PHONY: test clean
 
