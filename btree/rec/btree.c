@@ -82,6 +82,12 @@ void bst_insert(bst_node_t **tree, char key, bst_node_content_t value) {
 
     // If key already exists, update its value
     if (key == (*tree)->key) {
+        // Free the original content
+        if ((*tree)->content.value != NULL) {
+            free((*tree)->content.value);
+            (*tree)->content.value = NULL;
+        }
+
         (*tree)->content = value;
         return;
     }
@@ -117,6 +123,11 @@ void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree) {
         // Free the right node, but preserve the left one
         bst_node_t *toFree = *tree;
         *tree = (*tree)->left;
+
+        if (toFree->content.value != NULL) {
+            free(toFree->content.value);
+            toFree->content.value = NULL;
+        }
         free(toFree);
         return;
     }
@@ -144,8 +155,13 @@ void bst_delete(bst_node_t **tree, char key) {
         return;
     }
 
-    // If keys match
     if (key == (*tree)->key) {
+        if ((*tree)->content.value != NULL) {
+            free((*tree)->content.value);
+            (*tree)->content.value = NULL;
+        }
+
+        // Free the node
         if ((*tree)->left == NULL && (*tree)->right == NULL) {
             // Tree has no subtrees
             // Free the element
@@ -198,6 +214,12 @@ void bst_dispose(bst_node_t **tree) {
     // Continue disposing the left and right subtrees
     bst_dispose(&(*tree)->left);
     bst_dispose(&(*tree)->right);
+
+    // Free the node content as well
+    if ((*tree)->content.value != NULL) {
+        free((*tree)->content.value);
+        (*tree)->content.value = NULL;
+    }
 
     // Free the current element
     free(*tree);
