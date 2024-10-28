@@ -17,8 +17,9 @@
  * leak). Protože neinicializovaný ukazatel má nedefinovanou hodnotu, není
  * možné toto detekovat ve funkci.
  */
-void bst_init(bst_node_t **tree)
-{
+void bst_init(bst_node_t **tree) {
+    // Initialize tree to NULL
+    *tree = NULL;
 }
 
 /*
@@ -30,9 +31,24 @@ void bst_init(bst_node_t **tree)
  *
  * Funkci implementujte rekurzivně bez použité vlastních pomocných funkcí.
  */
-bool bst_search(bst_node_t *tree, char key, bst_node_content_t **value)
-{
-  return false;
+bool bst_search(bst_node_t *tree, char key, bst_node_content_t **value) {
+    // Check if pointer to tree is valid
+    if (tree == NULL) {
+        return false;
+    }
+
+    // If the current key matches the desired key, return true and its value
+    if (key == tree->key) {
+        *value = &(tree->content);
+        return true;
+    }
+
+    // If the key is smaller than the current key continue in left subtree
+    // Otherwise continue in the right subtree
+    if (key < tree->key) {
+        return bst_search(tree->left, key, value);
+    }
+    return bst_search(tree->right, key, value);
 }
 
 /*
@@ -46,8 +62,37 @@ bool bst_search(bst_node_t *tree, char key, bst_node_content_t **value)
  *
  * Funkci implementujte rekurzivně bez použití vlastních pomocných funkcí.
  */
-void bst_insert(bst_node_t **tree, char key, bst_node_content_t value)
-{
+void bst_insert(bst_node_t **tree, char key, bst_node_content_t value) {
+    // If the current tree is NULL, insert new node
+    if (*tree == NULL) {
+        // Allocate memory for new node
+        *tree = malloc(sizeof(bst_node_t));
+        if (*tree == NULL) {
+            return;
+        }
+
+        // Set node properties
+        (*tree)->key = key;
+        (*tree)->content = value;
+        (*tree)->right = NULL;
+        (*tree)->left = NULL;
+
+        return;
+    }
+
+    // If key already exists, update its value
+    if (key == (*tree)->key) {
+        (*tree)->content = value;
+        return;
+    }
+
+    // If the key is smaller than the current key continue in left subtree
+    // Otherwise continue in the right subtree
+    if (key < (*tree)->key) {
+        bst_insert(&(*tree)->left, key, value);
+    } else {
+        bst_insert(&(*tree)->right, key, value);
+    }
 }
 
 /*
@@ -63,8 +108,21 @@ void bst_insert(bst_node_t **tree, char key, bst_node_content_t value)
  *
  * Funkci implementujte rekurzivně bez použití vlastních pomocných funkcí.
  */
-void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree)
-{
+void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree) {
+    if ((*tree)->right == NULL) {
+        // Set key and value of the rightmost to the target
+        target->key = (*tree)->key;
+        target->content = (*tree)->content;
+
+        // Free the right node, but preserve the left one
+        bst_node_t *toFree = *tree;
+        *tree = (*tree)->left;
+        free(toFree);
+        return;
+    }
+
+    // Find the rightmost
+    bst_replace_by_rightmost(target, &(*tree)->right);
 }
 
 /*
@@ -80,8 +138,46 @@ void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree)
  * Funkci implementujte rekurzivně pomocí bst_replace_by_rightmost a bez
  * použití vlastních pomocných funkcí.
  */
-void bst_delete(bst_node_t **tree, char key)
-{
+void bst_delete(bst_node_t **tree, char key) {
+    // Check if the pointer to tree is valid
+    if (*tree == NULL) {
+        return;
+    }
+
+    // If keys match
+    if (key == (*tree)->key) {
+        if ((*tree)->left == NULL && (*tree)->right == NULL) {
+            // Tree has no subtrees
+            // Free the element
+            free(*tree);
+            *tree = NULL;
+        } else if ((*tree)->left == NULL) {
+            // Tree has only right subtree
+            // Replaces the current element with the right one
+            bst_node_t *toFree = *tree;
+            *tree = (*tree)->right;
+            free(toFree);
+        } else if ((*tree)->right == NULL) {
+            // Tree has only left subtree
+            // Replaces the current element with the left one
+            bst_node_t *toFree = *tree;
+            *tree = (*tree)->left;
+            free(toFree);
+        } else {
+            // Tree has both subtrees
+            // Replaces the current element with the rightmost
+            bst_replace_by_rightmost(*tree, &(*tree)->left);
+        }
+        return;
+    }
+
+    // If the key is smaller than the current key continue in left subtree
+    // Otherwise continue in the right subtree
+    if (key < (*tree)->key) {
+        bst_delete(&(*tree)->left, key);
+    } else {
+        bst_delete(&(*tree)->right, key);
+    }
 }
 
 /*
@@ -93,8 +189,19 @@ void bst_delete(bst_node_t **tree, char key)
  *
  * Funkci implementujte rekurzivně bez použití vlastních pomocných funkcí.
  */
-void bst_dispose(bst_node_t **tree)
-{
+void bst_dispose(bst_node_t **tree) {
+    // Check if pointer to tree is valid
+    if (*tree == NULL) {
+        return;
+    }
+
+    // Continue disposing the left and right subtrees
+    bst_dispose(&(*tree)->left);
+    bst_dispose(&(*tree)->right);
+
+    // Free the current element
+    free(*tree);
+    *tree = NULL;
 }
 
 /*
@@ -104,8 +211,18 @@ void bst_dispose(bst_node_t **tree)
  *
  * Funkci implementujte rekurzivně bez použití vlastních pomocných funkcí.
  */
-void bst_preorder(bst_node_t *tree, bst_items_t *items)
-{
+void bst_preorder(bst_node_t *tree, bst_items_t *items) {
+    // Check if pointers to tree and items are valid
+    if (tree == NULL || items == NULL) {
+        return;
+    }
+
+    // Add current node to items
+    bst_add_node_to_items(tree, items);
+
+    // Continue on left and right subtree
+    bst_preorder(tree->left, items);
+    bst_preorder(tree->right, items);
 }
 
 /*
@@ -115,8 +232,20 @@ void bst_preorder(bst_node_t *tree, bst_items_t *items)
  *
  * Funkci implementujte rekurzivně bez použití vlastních pomocných funkcí.
  */
-void bst_inorder(bst_node_t *tree, bst_items_t *items)
-{
+void bst_inorder(bst_node_t *tree, bst_items_t *items) {
+    // Check if pointer to tree and items are valid
+    if (tree == NULL || items == NULL) {
+        return;
+    }
+
+    // Continue on left subtree
+    bst_inorder(tree->left, items);
+
+    // Add current node to items
+    bst_add_node_to_items(tree, items);
+
+    // Continue on right subtree
+    bst_inorder(tree->right, items);
 }
 
 /*
@@ -126,6 +255,16 @@ void bst_inorder(bst_node_t *tree, bst_items_t *items)
  *
  * Funkci implementujte rekurzivně bez použití vlastních pomocných funkcí.
  */
-void bst_postorder(bst_node_t *tree, bst_items_t *items)
-{
+void bst_postorder(bst_node_t *tree, bst_items_t *items) {
+    // Check if pointers to tree and items are valid
+    if (tree == NULL || items == NULL) {
+        return;
+    }
+
+    // Continue on left and right subtree
+    bst_postorder(tree->left, items);
+    bst_postorder(tree->right, items);
+
+    // Add current node to items
+    bst_add_node_to_items(tree, items);
 }
