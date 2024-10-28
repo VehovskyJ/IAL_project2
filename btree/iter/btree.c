@@ -19,8 +19,9 @@
  * leak). Protože neinicializovaný ukazatel má nedefinovanou hodnotu, není
  * možné toto detekovat ve funkci.
  */
-void bst_init(bst_node_t **tree)
-{
+void bst_init(bst_node_t **tree) {
+    // Initializes tree to NULL
+    *tree = NULL;
 }
 
 /*
@@ -32,9 +33,28 @@ void bst_init(bst_node_t **tree)
  *
  * Funkci implementujte iterativně bez použité vlastních pomocných funkcí.
  */
-bool bst_search(bst_node_t *tree, char key, bst_node_content_t **value)
-{
-  return false;
+bool bst_search(bst_node_t *tree, char key, bst_node_content_t **value) {
+    // Save current node
+    bst_node_t *node = tree;
+
+    while (node != NULL) {
+        // If the key is found, return its value and true
+        if (key == node->key) {
+            *value = &(node->content);
+            return true;
+        }
+
+        // If the key is smaller than the current key continue in left subtree
+        // Otherwise continue in the right subtree
+        if (key < node->key) {
+            node = node->left;
+        } else {
+            node = node->right;
+        }
+    }
+
+    // Key was not found
+    return false;
 }
 
 /*
@@ -48,8 +68,45 @@ bool bst_search(bst_node_t *tree, char key, bst_node_content_t **value)
  *
  * Funkci implementujte iterativně bez použití vlastních pomocných funkcí.
  */
-void bst_insert(bst_node_t **tree, char key, bst_node_content_t value)
-{
+void bst_insert(bst_node_t **tree, char key, bst_node_content_t value) {
+    // Create a new node
+    bst_node_t *newNode = malloc(sizeof(bst_node_t));
+    newNode->key = key;
+    newNode->content = value;
+    newNode->left = NULL;
+    newNode->right = NULL;
+
+    // If the tree is empty, insert the new node as root
+    if (*tree == NULL) {
+        *tree = newNode;
+        return;
+    }
+
+    bst_node_t *node = *tree;
+    while (node != NULL) {
+        // If the keys match, replace its value and free the new node
+        if (key == node->key) {
+            node->content = value;
+            free(newNode);
+            return;
+        }
+
+        // If the key is smaller than the current key continue in left subtree
+        // Otherwise continue in the right subtree
+        if (key < node->key) {
+            if (node->left == NULL) {
+                node->left = newNode;
+                return;
+            }
+            node = node->left;
+        } else {
+            if (node->right == NULL) {
+                node->right = newNode;
+                return;
+            }
+            node = node->right;
+        }
+    }
 }
 
 /*
@@ -65,8 +122,31 @@ void bst_insert(bst_node_t **tree, char key, bst_node_content_t value)
  *
  * Funkci implementujte iterativně bez použití vlastních pomocných funkcí.
  */
-void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree)
-{
+void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree) {
+    // Check if the tree is empty
+    if (*tree == NULL) {
+        return;
+    }
+
+    bst_node_t *node = *tree;
+    bst_node_t *previous = NULL;
+    // Find the rightmost
+    while (node->right != NULL) {
+        previous = node;
+        node = node->right;
+    }
+
+    // Sets key and value of the rightmost to the target
+    target->key = node->key;
+    target->content = node->content;
+
+    if (previous == NULL) {
+        *tree = node->left;
+    } else {
+        previous->right = node->left;
+    }
+
+    free(node);
 }
 
 /*
@@ -82,8 +162,67 @@ void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree)
  * Funkci implementujte iterativně pomocí bst_replace_by_rightmost a bez
  * použití vlastních pomocných funkcí.
  */
-void bst_delete(bst_node_t **tree, char key)
-{
+void bst_delete(bst_node_t **tree, char key) {
+    // Check if pointer to tree is valid
+    if (*tree == NULL) {
+        return;
+    }
+
+    bst_node_t *node = *tree;
+    bst_node_t *previous = NULL;
+
+    while (node != NULL && node->key != key) {
+        previous = node;
+
+        // If the key is smaller than the current key continue in left subtree
+        // Otherwise continue in the right subtree
+        if (key < node->key) {
+            node = node->left;
+        } else {
+            node = node->right;
+        }
+    }
+
+    // If the key was not found, return
+    if (node == NULL) {
+        return;
+    }
+
+    if (node->left == NULL && node->right == NULL) {
+        // If the node is root, set the tree to NULL
+        if (previous == NULL) {
+            *tree = NULL;
+        } else if (previous->left == node) {
+            // If the node is left child, set the left child to NULL
+            previous->left = NULL;
+        } else if (previous->right == node) {
+            // If the node is right child, set the right child to NULL
+            previous->right = NULL;
+        }
+
+        free(node);
+    } else if (node->left != NULL && node->right != NULL) {
+        // Replace the node by the rightmost node of the left subtree
+        bst_replace_by_rightmost(node, &node->left);
+    } else {
+        // If the node has only one child, replace it by the child
+        bst_node_t *child;
+        if (node->left != NULL) {
+            child = node->left;
+        } else {
+            child = node->right;
+        }
+
+        if (previous == NULL) {
+            *tree = child;
+        } else if (previous->left == node) {
+            previous->left = child;
+        } else if (previous->right == node) {
+            previous->right = child;
+        }
+
+        free(node);
+    }
 }
 
 /*
@@ -96,8 +235,37 @@ void bst_delete(bst_node_t **tree, char key)
  * Funkci implementujte iterativně s pomocí zásobníku a bez použití
  * vlastních pomocných funkcí.
  */
-void bst_dispose(bst_node_t **tree)
-{
+void bst_dispose(bst_node_t **tree) {
+    // Check if pointer to tree is valid
+    if (*tree == NULL) {
+        return;
+    }
+
+    // Initialize stack
+    stack_bst_t stack;
+    stack_bst_init(&stack);
+
+    // Push the root to stack
+    stack_bst_push(&stack, *tree);
+
+    while (!stack_bst_empty(&stack)) {
+        // Pop the node from the stack
+        bst_node_t *node = stack_bst_top(&stack);
+        stack_bst_pop(&stack);
+
+        // Push the children of the node to the stack
+        if (node->left != NULL) {
+            stack_bst_push(&stack, node->left);
+        }
+        if (node->right != NULL) {
+            stack_bst_push(&stack, node->right);
+        }
+
+        // Free the current element
+        free(node);
+    }
+
+    *tree = NULL;
 }
 
 /*
@@ -109,8 +277,19 @@ void bst_dispose(bst_node_t **tree)
  * Funkci implementujte iterativně s pomocí zásobníku a bez použití
  * vlastních pomocných funkcí.
  */
-void bst_leftmost_preorder(bst_node_t *tree, stack_bst_t *to_visit, bst_items_t *items)
-{
+void bst_leftmost_preorder(bst_node_t *tree, stack_bst_t *to_visit, bst_items_t *items) {
+    while (tree != NULL) {
+        // Add the node to items
+        bst_add_node_to_items(tree, items);
+
+        // Push the right child to the stack
+        if (tree->right != NULL) {
+            stack_bst_push(to_visit, tree->right);
+        }
+
+        // Continue in the left subtree
+        tree = tree->left;
+    }
 }
 
 /*
@@ -121,8 +300,35 @@ void bst_leftmost_preorder(bst_node_t *tree, stack_bst_t *to_visit, bst_items_t 
  * Funkci implementujte iterativně pomocí funkce bst_leftmost_preorder a
  * zásobníku uzlů a bez použití vlastních pomocných funkcí.
  */
-void bst_preorder(bst_node_t *tree, bst_items_t *items)
-{
+void bst_preorder(bst_node_t *tree, bst_items_t *items) {
+    // Check if pointers to tree and items are valid
+    if (tree == NULL || items == NULL) {
+        return;
+    }
+
+    // Initialize stack
+    stack_bst_t stack;
+    stack_bst_init(&stack);
+
+    // Push the root to stack
+    stack_bst_push(&stack, tree);
+
+    while (!stack_bst_empty(&stack)) {
+        // Pop node from the stack
+        bst_node_t *node = stack_bst_top(&stack);
+        stack_bst_pop(&stack);
+
+        // Add the node to items
+        bst_add_node_to_items(node, items);
+
+        // Push the right child to the stack
+        if (node->right != NULL) {
+            stack_bst_push(&stack, node->right);
+        }
+
+        // Continue in the left subtree
+        bst_leftmost_preorder(node->left, &stack, items);
+    }
 }
 
 /*
@@ -134,8 +340,14 @@ void bst_preorder(bst_node_t *tree, bst_items_t *items)
  * Funkci implementujte iterativně s pomocí zásobníku a bez použití
  * vlastních pomocných funkcí.
  */
-void bst_leftmost_inorder(bst_node_t *tree, stack_bst_t *to_visit)
-{
+void bst_leftmost_inorder(bst_node_t *tree, stack_bst_t *to_visit) {
+    while (tree != NULL) {
+        // Push the node to the stack
+        stack_bst_push(to_visit, tree);
+
+        // Continue in the left subtree
+        tree = tree->left;
+    }
 }
 
 /*
@@ -146,8 +358,30 @@ void bst_leftmost_inorder(bst_node_t *tree, stack_bst_t *to_visit)
  * Funkci implementujte iterativně pomocí funkce bst_leftmost_inorder a
  * zásobníku uzlů a bez použití vlastních pomocných funkcí.
  */
-void bst_inorder(bst_node_t *tree, bst_items_t *items)
-{
+void bst_inorder(bst_node_t *tree, bst_items_t *items) {
+    // Check if pointers to tree and items are valid
+    if (tree == NULL || items == NULL) {
+        return;
+    }
+
+    // Initialize stack
+    stack_bst_t stack;
+    stack_bst_init(&stack);
+
+    while (tree != NULL || !stack_bst_empty(&stack)) {
+        // Go to the leftmost
+        bst_leftmost_inorder(tree, &stack);
+
+        // Pop node from the stack
+        bst_node_t *node = stack_bst_top(&stack);
+        stack_bst_pop(&stack);
+
+        // Add the node to items
+        bst_add_node_to_items(node, items);
+
+        // Continue in the right subtree
+        tree = node->right;
+    }
 }
 
 /*
@@ -161,8 +395,15 @@ void bst_inorder(bst_node_t *tree, bst_items_t *items)
  * vlastních pomocných funkcí.
  */
 void bst_leftmost_postorder(bst_node_t *tree, stack_bst_t *to_visit,
-                            stack_bool_t *first_visit)
-{
+                            stack_bool_t *first_visit) {
+    while (tree != NULL) {
+        // Push the node to the stack
+        stack_bst_push(to_visit, tree);
+        stack_bool_push(first_visit, true);
+
+        // Continue in the left subtree
+        tree = tree->left;
+    }
 }
 
 /*
@@ -173,6 +414,37 @@ void bst_leftmost_postorder(bst_node_t *tree, stack_bst_t *to_visit,
  * Funkci implementujte iterativně pomocí funkce bst_leftmost_postorder a
  * zásobníku uzlů a bool hodnot a bez použití vlastních pomocných funkcí.
  */
-void bst_postorder(bst_node_t *tree, bst_items_t *items)
-{
+void bst_postorder(bst_node_t *tree, bst_items_t *items) {
+    // Check if pointers to tree and items are valid
+    if (tree == NULL || items == NULL) {
+        return;
+    }
+
+    // Initialize stacks
+    stack_bst_t stack;
+    stack_bst_init(&stack);
+    stack_bool_t first_visit;
+    stack_bool_init(&first_visit);
+
+    bst_leftmost_postorder(tree, &stack, &first_visit);
+
+    while (!stack_bst_empty(&stack)) {
+        // Pop node from the stack
+        bst_node_t *node = stack_bst_top(&stack);
+        bool first = stack_bool_top(&first_visit);
+        stack_bool_pop(&first_visit);
+
+        if (first) {
+            // Push the node to the stack
+            stack_bool_push(&first_visit, false);
+
+            // Continue in the left subtree
+            bst_leftmost_postorder(node->right, &stack, &first_visit);
+        } else {
+            stack_bst_pop(&stack);
+
+            // Add the node to items
+            bst_add_node_to_items(node, items);
+        }
+    }
 }
