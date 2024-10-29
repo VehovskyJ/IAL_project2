@@ -11,6 +11,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Convert letter to lowercase
+char toLower(char c) {
+    if (c >= 'A' && c <= 'Z') {
+        return c + 32;
+    }
+    return c;
+}
+
+// Categorize character and return either letter, space or underscore
+char categorizeLetter(char c) {
+    c = toLower(c);
+    if ((c >= 'a' && c <= 'z') || c == ' ') {
+        return c;
+    }
+    return '_';
+}
+
+size_t len(const char *string) {
+    size_t length = 0;
+    while (string[length] != '\0') {
+        length++;
+    }
+    return length;
+}
 
 /**
  * Vypočítání frekvence výskytů znaků ve vstupním řetězci.
@@ -31,4 +55,25 @@
  * Pro implementaci si můžete v tomto souboru nadefinovat vlastní pomocné funkce.
 */
 void letter_count(bst_node_t **tree, char *input) {
+    bst_init(tree);
+
+    for (int i = 0; i < len(input); ++i) {
+        char c = categorizeLetter(*input++);
+
+        // Search if character is already in the tree
+        bst_node_content_t* result = NULL;
+        if (bst_search(*tree, c, &result)) {
+            // Increment the character count in the node
+            (*((int*)result->value))++;
+            continue;
+        }
+
+        // Character is not in the tree, insert new node
+        bst_node_content_t item = {
+                .type = INTEGER,
+                .value = malloc(sizeof(int))
+        };
+        *((int*)(item.value)) = 1;
+        bst_insert(tree, c, item);
+    }
 }
