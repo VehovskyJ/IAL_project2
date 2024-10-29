@@ -58,7 +58,7 @@ void letter_count(bst_node_t **tree, char *input) {
     bst_init(tree);
 
     for (int i = 0; i < len(input); ++i) {
-        char c = categorizeLetter(*input++);
+        char c = categorizeLetter(input[i]);
 
         // Search if character is already in the tree
         bst_node_content_t* result = NULL;
