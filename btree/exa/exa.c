@@ -12,7 +12,7 @@
 #include <stdlib.h>
 
 // Convert letter to lowercase
-char toLower(char c) {
+char _toLower(char c) {
     if (c >= 'A' && c <= 'Z') {
         return c + 32;
     }
@@ -20,15 +20,15 @@ char toLower(char c) {
 }
 
 // Categorize character and return either letter, space or underscore
-char categorizeLetter(char c) {
-    c = toLower(c);
+char _categorizeLetter(char c) {
+    c = _toLower(c);
     if ((c >= 'a' && c <= 'z') || c == ' ') {
         return c;
     }
     return '_';
 }
 
-size_t len(const char *string) {
+size_t _len(const char *string) {
     size_t length = 0;
     while (string[length] != '\0') {
         length++;
@@ -57,8 +57,8 @@ size_t len(const char *string) {
 void letter_count(bst_node_t **tree, char *input) {
     bst_init(tree);
 
-    for (int i = 0; i < len(input); ++i) {
-        char c = categorizeLetter(input[i]);
+    for (int i = 0; i < _len(input); ++i) {
+        char c = _categorizeLetter(input[i]);
 
         // Search if character is already in the tree
         bst_node_content_t* result = NULL;
